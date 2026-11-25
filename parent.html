@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl"><head><base href="https://1843676847-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.ar.72AGBDZhTXc.O%2Fd%3D1%2Frs%3DAHpOoo-QDds4cTph4aXi5Lh_Q_KyuP2iMA%2Fm%3D__features__" target="_blank">
+<html lang="ar" dir="rtl"><head><base href="https://735424216-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.ar.72AGBDZhTXc.O%2Fd%3D1%2Frs%3DAHpOoo-QDds4cTph4aXi5Lh_Q_KyuP2iMA%2Fm%3D__features__" target="_blank">
       <script>window.EMBEDDED_FIREBASE_URL = "https://hafez-48282-default-rtdb.firebaseio.com/";</script>
     
 
@@ -479,7 +479,10 @@
                                     <button onclick="openAddStudentModal()" class="px-3 py-2 rounded-xl bg-[#1e3a5f] hover:bg-[#162d4a] text-white text-xs font-bold transition">
                                         + طالب
                                     </button>
-                                    <label class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition cursor-pointer" title="الترتيب: اسم الطالب | رقم الطالب | الفصل | المعلم">
+                                    <button onclick="downloadExcelImportTemplate()" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200/80 text-xs font-bold transition" title="تنزيل نموذج Excel فارغ بنفس ترتيب الأعمدة المطلوبة">
+                                        📋 نموذج Excel
+                                    </button>
+                                    <label class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition cursor-pointer" title="الترتيب: اسم الطالب | رقم الطالب | الفصل | المعلم | رمز المعلم">
                                         📥 استيراد Excel
                                         <input type="file" accept=".xlsx,.xls,.csv" onchange="importStudentsExcel(event)" class="hidden">
                                     </label>
@@ -539,7 +542,7 @@
                             <div>أحمد سلطان احمد الزمان</div>
                             
                         </td>
-                        <td class="py-2.5 px-2.5"><span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono text-xs font-bold text-slate-700">1794</span></td>
+                        <td class="py-2.5 px-2.5"><span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono text-xs font-bold text-slate-700">8296</span></td>
                         <td class="py-2.5 px-2.5 text-center">
                             <button onclick="resetParentPasswordByAdmin('stu_1795548978985_iqw0')" title="إعادة تعيين كلمة مرور ولي الأمر" class="px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 text-[11px] font-bold transition">
                                 🔄 تصفير
@@ -2119,7 +2122,7 @@
 
                         if (!rawName) return;
                         if (idx === 0 && (rawName.includes('اسم الطالب') || rawName.toLowerCase().includes('name'))) return;
-
+                        if (rawName.startsWith('مثال:')) return;
                         let targetClass = null;
                         if (rawClassName) {
                             targetClass = appState.classes.find(c => c.name === rawClassName);
@@ -2197,6 +2200,63 @@
             };
             reader.readAsArrayBuffer(file);
             event.target.value = '';
+        }
+
+        function downloadExcelImportTemplate() {
+            const templateData = [
+                ['اسم الطالب', 'رمز ولي الأمر / رقم الطالب', 'اسم الفصل', 'اسم المعلم', 'رمز دخول المعلم'],
+                ['مثال: محمد بن عبدالله السالم', '1001', 'الصف الرابع - أ', 'أ. سالم البوعينين', 'T101']
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(templateData);
+            ws['!views'] = [{ rightToLeft: true }];
+            ws['!cols'] = [
+                { wch: 32 },
+                { wch: 26 },
+                { wch: 22 },
+                { wch: 24 },
+                { wch: 20 }
+            ];
+
+            const thinBlack = { style: 'thin', color: { rgb: '000000' } };
+            const mediumBlack = { style: 'medium', color: { rgb: '000000' } };
+
+            ws['!rows'] = [{ hpt: 28 }, { hpt: 24 }];
+            for (let R = 0; R <= 1; ++R) {
+                for (let C = 0; C <= 4; ++C) {
+                    const cellAddr = XLSX.utils.encode_cell({ r: R, c: C });
+                    if (!ws[cellAddr]) ws[cellAddr] = { t: 's', v: '' };
+
+                    const borderStyle = {
+                        top: R === 0 ? mediumBlack : thinBlack,
+                        bottom: R === 1 ? mediumBlack : thinBlack,
+                        left: C === 0 ? mediumBlack : thinBlack,
+                        right: C === 4 ? mediumBlack : thinBlack
+                    };
+
+                    if (R === 0) {
+                        ws[cellAddr].s = {
+                            font: { name: 'Calibri', sz: 12, bold: true, color: { rgb: 'FFFFFF' } },
+                            fill: { fgColor: { rgb: '1E3A5F' } },
+                            alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+                            border: borderStyle
+                        };
+                    } else {
+                        ws[cellAddr].s = {
+                            font: { name: 'Calibri', sz: 11, italic: true, color: { rgb: '475569' } },
+                            fill: { fgColor: { rgb: 'F8FAFC' } },
+                            alignment: { horizontal: C === 0 ? 'right' : 'center', vertical: 'center' },
+                            border: borderStyle
+                        };
+                    }
+                }
+            }
+
+            const wb = XLSX.utils.book_new();
+            wb.Workbook = { Views: [{ RTL: true }] };
+            XLSX.utils.book_append_sheet(wb, ws, 'نموذج_الاستيراد');
+            XLSX.writeFile(wb, 'نموذج_استيراد_الطلاب_نظام_حافظ.xlsx');
+            showToast('تم تنزيل نموذج Excel الجاهز للتعبئة');
         }
 
         function exportClassExcel() {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl"><head><base href="https://2077742472-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.ar.72AGBDZhTXc.O%2Fd%3D1%2Frs%3DAHpOoo-QDds4cTph4aXi5Lh_Q_KyuP2iMA%2Fm%3D__features__" target="_blank">
+<html lang="ar" dir="rtl"><head><base href="https://583956025-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.ar.72AGBDZhTXc.O%2Fd%3D1%2Frs%3DAHpOoo-QDds4cTph4aXi5Lh_Q_KyuP2iMA%2Fm%3D__features__" target="_blank">
       <script>
         (function() {
           if (window.__atariInitRender) {
@@ -638,6 +638,10 @@
             right: 0;
             z-index: 10;
         }
+        .masked-pin-input {
+            -webkit-text-security: disc;
+            text-security: disc;
+        }
         @media print {
             body * {
                 visibility: hidden;
@@ -706,7 +710,7 @@
         <section id="sectionAdmin" class="space-y-5">
 
             <!-- شاشة قفل الإدارة -->
-            <div id="adminLockScreen" class="max-w-md mx-auto my-6 sm:my-10 bg-white rounded-3xl shadow-md border border-slate-200/80 overflow-hidden hidden">
+            <div id="adminLockScreen" class="max-w-md mx-auto my-6 sm:my-10 bg-white rounded-3xl shadow-md border border-slate-200/80 overflow-hidden">
                 <div class="rcjy-banner p-6 text-center text-white">
                     <div class="w-16 h-16 mx-auto bg-white/10 rounded-2xl flex items-center justify-center text-3xl mb-3 border border-white/20">
                         🔐
@@ -717,7 +721,7 @@
                 <div class="p-5 sm:p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1.5">أدخل رمز مرور الإدارة</label>
-                        <input type="password" id="adminPinInput" autocomplete="new-password" onkeydown="if(event.key==='Enter') verifyAdminPin()" placeholder="••••" class="w-full text-center text-2xl tracking-widest font-bold px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#1e3a5f] focus:ring-2 focus:ring-slate-200 outline-none" aria-autocomplete="list">
+                        <input type="text" id="adminPinInput" name="pin_admin_code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" onfocus="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter') verifyAdminPin()" placeholder="••••" class="masked-pin-input w-full text-center text-2xl tracking-widest font-bold px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#1e3a5f] focus:ring-2 focus:ring-slate-200 outline-none" value="">
                     </div>
                     <button onclick="verifyAdminPin()" class="w-full py-3 rounded-xl bg-[#1e3a5f] hover:bg-[#162d4a] text-white font-bold shadow-sm transition">
                         فتح لوحة الإدارة
@@ -738,7 +742,7 @@
             </div>
 
             <!-- لوحة الإدارة المفتوحة -->
-            <div id="adminUnlockedContent" class="space-y-5">
+            <div id="adminUnlockedContent" class="space-y-5 hidden">
 
                 <!-- الشريط العلوي للوحة الإدارة -->
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -769,8 +773,8 @@
                 <div class="space-y-5">
 
                     <!-- القائمة الجانبية المنزلقة (تظهر عند الضغط على زر الإعدادات والملفات) -->
-                    <div id="adminSettingsDrawerOverlay" onclick="toggleAdminSettingsDrawer(false)" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs z-40 transition-opacity"></div>
-                    <aside id="adminSettingsDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-slate-50 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-200">
+                    <div id="adminSettingsDrawerOverlay" onclick="toggleAdminSettingsDrawer(false)" class="fixed inset-0 bg-slate-900/45 backdrop-blur-xs z-40 transition-opacity hidden"></div>
+                    <aside id="adminSettingsDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-slate-50 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-200 translate-x-full">
                         <div class="rcjy-banner text-white px-5 py-4 flex items-center justify-between shrink-0">
                             <div class="flex items-center gap-2.5">
                                 <span class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-base">⚙️</span>
@@ -6941,7 +6945,7 @@
                 <div class="p-5 sm:p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1.5">رمز دخول المعلم</label>
-                        <input type="password" id="teacherCodeInput" autocomplete="new-password" onkeydown="if(event.key==='Enter') loginTeacher()" placeholder="••••" class="w-full text-center text-2xl tracking-widest font-bold px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#1e3a5f] focus:ring-2 focus:ring-slate-200 outline-none">
+                        <input type="text" id="teacherCodeInput" name="pin_teacher_code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly="" onfocus="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter') loginTeacher()" placeholder="••••" class="masked-pin-input w-full text-center text-2xl tracking-widest font-bold px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#1e3a5f] focus:ring-2 focus:ring-slate-200 outline-none">
                     </div>
                     <button onclick="loginTeacher()" class="w-full py-3 rounded-xl bg-[#1e3a5f] hover:bg-[#162d4a] text-white font-bold shadow-sm transition">
                         دخول إلى كشف الفصل
@@ -7053,7 +7057,7 @@
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1.5">رقم الطالب / رمز المتابعة</label>
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="password" id="parentCodeInput" autocomplete="new-password" onkeydown="if(event.key==='Enter') searchStudentByParentCode()" placeholder="••••" class="flex-1 text-center text-2xl tracking-widest font-bold px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#1e3a5f] focus:ring-2 focus:ring-slate-200 outline-none">
+                            <input type="text" id="parentCodeInput" name="pin_parent_code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly="" onfocus="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter') searchStudentByParentCode()" placeholder="••••" class="masked-pin-input flex-1 text-center text-2xl tracking-widest font-bold px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-[#1e3a5f] focus:ring-2 focus:ring-slate-200 outline-none">
                             <button onclick="searchStudentByParentCode()" class="px-6 py-3 rounded-xl bg-[#1e3a5f] hover:bg-[#162d4a] text-white font-bold shadow-sm transition">
                                 عرض السجل
                             </button>
@@ -7173,7 +7177,7 @@
             <h3 class="font-bold text-lg text-slate-900">🔑 تغيير رمز مرور الإدارة</h3>
             <div>
                 <label class="block text-xs font-bold text-slate-600 mb-1">الرمز السري الجديد (4 خانات أو أكثر)</label>
-                <input type="password" id="newAdminPinInput" autocomplete="new-password" placeholder="••••" class="w-full text-center text-xl tracking-widest font-bold px-3 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-[#1e3a5f]">
+                <input type="text" id="newAdminPinInput" name="pin_new_admin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly="" onfocus="this.removeAttribute('readonly')" placeholder="••••" class="masked-pin-input w-full text-center text-xl tracking-widest font-bold px-3 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-[#1e3a5f]">
             </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button onclick="closeModal('changePinModal')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">إلغاء</button>
@@ -7191,7 +7195,7 @@
             </p>
             <div>
                 <label class="block text-xs font-bold text-slate-600 mb-1">كلمة المرور الجديدة (4 خانات أو أكثر)</label>
-                <input type="password" id="newTeacherCodeInput" autocomplete="new-password" onkeydown="if(event.key==='Enter') saveNewTeacherCode()" placeholder="••••" class="w-full text-center text-xl tracking-widest font-bold px-3 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-[#1e3a5f]">
+                <input type="text" id="newTeacherCodeInput" name="pin_new_teacher" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly="" onfocus="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter') saveNewTeacherCode()" placeholder="••••" class="masked-pin-input w-full text-center text-xl tracking-widest font-bold px-3 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-[#1e3a5f]">
             </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button id="cancelTeacherCodeBtn" onclick="closeModal('changeTeacherCodeModal')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">إلغاء</button>
@@ -7209,7 +7213,7 @@
             </p>
             <div>
                 <label class="block text-xs font-bold text-slate-600 mb-1">كلمة المرور الجديدة (4 خانات أو أكثر)</label>
-                <input type="password" id="newParentCodeInput" autocomplete="new-password" onkeydown="if(event.key==='Enter') saveNewParentCode()" placeholder="••••" class="w-full text-center text-xl tracking-widest font-bold px-3 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-[#1e3a5f]">
+                <input type="text" id="newParentCodeInput" name="pin_new_parent" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly="" onfocus="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter') saveNewParentCode()" placeholder="••••" class="masked-pin-input w-full text-center text-xl tracking-widest font-bold px-3 py-2.5 rounded-xl border border-slate-200 outline-none focus:border-[#1e3a5f]">
             </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button type="button" onclick="saveNewParentCode()" class="w-full py-2.5 rounded-xl bg-[#1e3a5f] hover:bg-[#162d4a] text-white text-xs font-bold shadow-sm transition">حفظ كلمة المرور والدخول</button>
@@ -7293,7 +7297,7 @@
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">للتأكيد، أدخل رمز مرور الإدارة الحالي:</label>
-                <input type="password" id="resetConfirmPinInput" autocomplete="new-password" onkeydown="if(event.key==='Enter') executeResetData()" placeholder="••••" class="w-full text-center text-lg tracking-widest font-bold px-3 py-2 rounded-xl border border-slate-200 outline-none focus:border-rose-500">
+                <input type="text" id="resetConfirmPinInput" name="pin_reset_confirm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" readonly="" onfocus="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter') executeResetData()" placeholder="••••" class="masked-pin-input w-full text-center text-lg tracking-widest font-bold px-3 py-2 rounded-xl border border-slate-200 outline-none focus:border-rose-500">
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
@@ -9217,11 +9221,20 @@
             if (adminPinInp) adminPinInp.setAttribute('value', '');
 
             if (lockedPortalName === 'teacher' || lockedPortalName === 'parent') {
-                // إزالة قسم الإدارة وشريط التنقل العلوي نهائياً من ملف المعلم وولي الأمر
+                // إزالة قسم الإدارة والأزرار الأخرى من الشريط العلوي نهائياً في ملف المعلم وولي الأمر
                 const secAdmin = docClone.querySelector('#sectionAdmin');
+                const btnAdmin = docClone.querySelector('#tabBtnAdmin');
+                const btnTeacher = docClone.querySelector('#tabBtnTeacher');
+                const btnParent = docClone.querySelector('#tabBtnParent');
                 const navTabs = docClone.querySelector('#mainNavTabs');
                 if (secAdmin) secAdmin.remove();
-                if (navTabs) navTabs.remove();
+                if (btnAdmin) btnAdmin.remove();
+                if (lockedPortalName === 'teacher' && btnParent) btnParent.remove();
+                if (lockedPortalName === 'parent' && btnTeacher) btnTeacher.remove();
+                if (navTabs) {
+                    navTabs.classList.remove('grid', 'grid-cols-3');
+                    navTabs.classList.add('flex', 'justify-center');
+                }
             }
 
             let htmlContent = '<!DOCTYPE html>\n' + docClone.outerHTML;
@@ -9252,43 +9265,6 @@
             a.download = `${portalName}.html`;
             a.click();
             showToast(`تم تنزيل ملف البوابة المستقل (${portalName}.html) ✓`);
-        }
-
-        function copyPortalDirectLink(portal) {
-            const map = {
-                admin: 'adminDirectUrlBox',
-                teacher: 'teacherDirectUrlBox',
-                parent: 'parentDirectUrlBox'
-            };
-            const el = document.getElementById(map[portal]);
-            if (!el) return;
-            el.select();
-            document.execCommand('copy');
-            showToast('تم نسخ الرابط المباشر بنجاح');
-        }
-
-        function downloadStandaloneHtmlFile() {
-            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'index.html';
-            a.click();
-            showToast('تم تنزيل ملف الإدارة الكامل (index.html)');
-        }
-
-        function downloadStandalonePortalFile(portalName) {
-            let htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-            htmlContent = htmlContent.replace(
-                'window.EMBEDDED_FIREBASE_URL =',
-                `window.LOCKED_PORTAL = "${portalName}"; window.EMBEDDED_FIREBASE_URL =`
-            );
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `${portalName}.html`;
-            a.click();
-            showToast(`تم تنزيل ملف البوابة (${portalName}.html)`);
         }
 
         function getStudentUnreadNotifications(st) {
@@ -10241,9 +10217,20 @@
             const portalParam = window.LOCKED_PORTAL || urlParams.get('portal');
             if (portalParam === 'teacher' || portalParam === 'parent') {
                 const nav = document.getElementById('mainNavTabs');
-                if (nav) nav.classList.add('hidden');
+                const btnAdmin = document.getElementById('tabBtnAdmin');
+                const btnTeacher = document.getElementById('tabBtnTeacher');
+                const btnParent = document.getElementById('tabBtnParent');
                 const secAdmin = document.getElementById('sectionAdmin');
+
                 if (secAdmin) secAdmin.remove();
+                if (btnAdmin) btnAdmin.remove();
+                if (portalParam === 'teacher' && btnParent) btnParent.remove();
+                if (portalParam === 'parent' && btnTeacher) btnTeacher.remove();
+
+                if (nav) {
+                    nav.classList.remove('grid', 'grid-cols-3');
+                    nav.classList.add('flex', 'justify-center');
+                }
                 switchTab(portalParam);
             } else {
                 switchTab('admin');

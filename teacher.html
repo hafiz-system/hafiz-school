@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl"><head><base href="https://574726825-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.ar.72AGBDZhTXc.O%2Fd%3D1%2Frs%3DAHpOoo-QDds4cTph4aXi5Lh_Q_KyuP2iMA%2Fm%3D__features__" target="_blank">
+<html lang="ar" dir="rtl"><head><base href="https://2077742472-atari-embeds.googleusercontent.com/embeds/928209f300890cc864ba5f6dbbfbf517/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.ar.72AGBDZhTXc.O%2Fd%3D1%2Frs%3DAHpOoo-QDds4cTph4aXi5Lh_Q_KyuP2iMA%2Fm%3D__features__" target="_blank">
       <script>
         (function() {
           if (window.__atariInitRender) {
@@ -7625,6 +7625,18 @@
         // =========================================================
         // 1. قسم لوحة الإدارة
         // =========================================================
+        function enforceAdminLockVisualState() {
+            const lockScreen = document.getElementById('adminLockScreen');
+            const unlockedContent = document.getElementById('adminUnlockedContent');
+            if (!isAdminUnlocked) {
+                if (lockScreen) lockScreen.classList.remove('hidden');
+                if (unlockedContent) unlockedContent.classList.add('hidden');
+            } else {
+                if (lockScreen) lockScreen.classList.add('hidden');
+                if (unlockedContent) unlockedContent.classList.remove('hidden');
+            }
+        }
+
         async function verifyAdminPin() {
             const input = document.getElementById('adminPinInput');
             const entered = normalizeCodeInput(input ? input.value : '');
@@ -7633,29 +7645,28 @@
                 return;
             }
 
-            let currentAdminPin = normalizeCodeInput(appState.adminPin || '1234');
-            if (entered !== currentAdminPin && entered !== '1234') {
-                await pullStateFromCloud(false);
-                currentAdminPin = normalizeCodeInput(appState.adminPin || '1234');
-            }
+            // جلب أحدث رمز إدارة من السحابة قبل التحقق لضمان عدم استخدام رمز قديم
+            await pullStateFromCloud(false);
+            const currentAdminPin = normalizeCodeInput(appState.adminPin || '1234');
 
-            if (entered === currentAdminPin || (appState.classes.length === 0 && appState.students.length === 0 && entered === '1234')) {
+            if (entered === currentAdminPin) {
                 if (input) input.value = '';
                 isAdminUnlocked = true;
-                document.getElementById('adminLockScreen').classList.add('hidden');
-                document.getElementById('adminUnlockedContent').classList.remove('hidden');
+                enforceAdminLockVisualState();
                 populateDirectPortalLinks();
                 renderAdminDashboard();
                 showToast('تم فتح لوحة الإدارة بنجاح');
             } else {
+                isAdminUnlocked = false;
+                enforceAdminLockVisualState();
                 showToast('رمز مرور الإدارة غير صحيح!', 'error');
             }
         }
 
         function lockAdminPanel() {
             isAdminUnlocked = false;
-            document.getElementById('adminUnlockedContent').classList.add('hidden');
-            document.getElementById('adminLockScreen').classList.remove('hidden');
+            toggleAdminSettingsDrawer(false);
+            enforceAdminLockVisualState();
         }
 
         function toggleAdminSettingsDrawer(open) {
@@ -7663,6 +7674,11 @@
             const overlay = document.getElementById('adminSettingsDrawerOverlay');
             if (!drawer || !overlay) return;
             if (open) {
+                if (!isAdminUnlocked) {
+                    enforceAdminLockVisualState();
+                    return;
+                }
+                populateDirectPortalLinks();
                 overlay.classList.remove('hidden');
                 drawer.classList.remove('translate-x-full');
             } else {
@@ -7686,6 +7702,10 @@
         }
 
         function renderAdminDashboard() {
+            if (!isAdminUnlocked) {
+                enforceAdminLockVisualState();
+                return;
+            }
             const totalClasses = appState.classes.length;
             const totalStudents = appState.students.length;
             let totalPct = 0;
@@ -9144,13 +9164,94 @@
         }
 
         function populateDirectPortalLinks() {
-            const baseUrl = window.location.href.split('?')[0].split('#')[0];
+            let baseUrl = '';
+            try {
+                const u = new URL(window.location.href);
+                if (u.protocol === 'http:' || u.protocol === 'https:') {
+                    baseUrl = `${u.origin}${u.pathname}`;
+                } else {
+                    baseUrl = window.location.href.split('?')[0].split('#')[0];
+                }
+            } catch (e) {
+                baseUrl = window.location.href.split('?')[0].split('#')[0];
+            }
+            if (!baseUrl || baseUrl.startsWith('about:') || baseUrl.startsWith('blob:')) {
+                baseUrl = 'https://hafiz-system.github.io/hafiz-school/';
+            }
             const adminBox = document.getElementById('adminDirectUrlBox');
             const teacherBox = document.getElementById('teacherDirectUrlBox');
             const parentBox = document.getElementById('parentDirectUrlBox');
             if (adminBox) adminBox.value = `${baseUrl}?portal=admin`;
             if (teacherBox) teacherBox.value = `${baseUrl}?portal=teacher`;
             if (parentBox) parentBox.value = `${baseUrl}?portal=parent`;
+        }
+
+        function copyPortalDirectLink(portal) {
+            populateDirectPortalLinks();
+            const map = {
+                admin: 'adminDirectUrlBox',
+                teacher: 'teacherDirectUrlBox',
+                parent: 'parentDirectUrlBox'
+            };
+            const el = document.getElementById(map[portal]);
+            if (!el || !el.value) return;
+            el.focus();
+            el.select();
+            document.execCommand('copy');
+            showToast('تم نسخ الرابط المباشر بنجاح ✓');
+        }
+
+        function buildCleanSerializedHtml(lockedPortalName = '') {
+            // استنساخ المستند وضمان قفل لوحة الإدارة بالكامل قبل التصدير حتى لا تُحفظ مفتوحة أبداً
+            const docClone = document.documentElement.cloneNode(true);
+            const lockScreen = docClone.querySelector('#adminLockScreen');
+            const unlockedContent = docClone.querySelector('#adminUnlockedContent');
+            const drawer = docClone.querySelector('#adminSettingsDrawer');
+            const overlay = docClone.querySelector('#adminSettingsDrawerOverlay');
+            const adminPinInp = docClone.querySelector('#adminPinInput');
+
+            if (lockScreen) lockScreen.classList.remove('hidden');
+            if (unlockedContent) unlockedContent.classList.add('hidden');
+            if (drawer) drawer.classList.add('translate-x-full');
+            if (overlay) overlay.classList.add('hidden');
+            if (adminPinInp) adminPinInp.setAttribute('value', '');
+
+            if (lockedPortalName === 'teacher' || lockedPortalName === 'parent') {
+                // إزالة قسم الإدارة وشريط التنقل العلوي نهائياً من ملف المعلم وولي الأمر
+                const secAdmin = docClone.querySelector('#sectionAdmin');
+                const navTabs = docClone.querySelector('#mainNavTabs');
+                if (secAdmin) secAdmin.remove();
+                if (navTabs) navTabs.remove();
+            }
+
+            let htmlContent = '<!DOCTYPE html>\n' + docClone.outerHTML;
+            if (lockedPortalName) {
+                htmlContent = htmlContent.replace(
+                    'window.EMBEDDED_FIREBASE_URL =',
+                    `window.LOCKED_PORTAL = "${lockedPortalName}"; window.EMBEDDED_FIREBASE_URL =`
+                );
+            }
+            return htmlContent;
+        }
+
+        function downloadStandaloneHtmlFile() {
+            const htmlContent = buildCleanSerializedHtml('');
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            a.click();
+            showToast('تم تنزيل ملف الإدارة الكامل (مقفل بكلمة المرور) ✓');
+        }
+
+        function downloadStandalonePortalFile(portalName) {
+            const htmlContent = buildCleanSerializedHtml(portalName);
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${portalName}.html`;
+            a.click();
+            showToast(`تم تنزيل ملف البوابة المستقل (${portalName}.html) ✓`);
         }
 
         function copyPortalDirectLink(portal) {
@@ -10129,6 +10230,9 @@
         // تهيئة النظام عند تحميل الصفحة
         // =========================================================
         window.addEventListener('DOMContentLoaded', async function () {
+            isAdminUnlocked = false;
+            enforceAdminLockVisualState();
+
             loadStateFromStorage();
             normalizeClassesTeacherCodes();
             updateHeaderSchoolInfo();
@@ -10138,13 +10242,16 @@
             if (portalParam === 'teacher' || portalParam === 'parent') {
                 const nav = document.getElementById('mainNavTabs');
                 if (nav) nav.classList.add('hidden');
+                const secAdmin = document.getElementById('sectionAdmin');
+                if (secAdmin) secAdmin.remove();
                 switchTab(portalParam);
-            } else if (portalParam === 'admin') {
+            } else {
                 switchTab('admin');
+                enforceAdminLockVisualState();
             }
 
             await pullStateFromCloud(false);
-            if (isAdminUnlocked) renderAdminDashboard();
+            enforceAdminLockVisualState();
         });
     </script>
 
